@@ -61,12 +61,12 @@ const renderEpisodes = (episodes = allEpisodes) => {
 };
 
 const searchEpisodes = (e, searchById) => {
-  let filteredEpisodes = allEpisodes;
+  let filteredEpisodes;
 
   // Search all episodes (if searchById is provided then we should seach by ID)
   if (searchById && e.target.value !== 'All') {
     filteredEpisodes = allEpisodes.filter(({ id }) => id === parseInt(e.target.value));
-  } else {
+  } else if (!searchById) {
     // Get the search query and lowercase it
     const query = e.target.value.toLowerCase();
     filteredEpisodes = allEpisodes.filter(({ name, summary }) => name.toLowerCase().includes(query) || summary.toLowerCase().includes(query));
