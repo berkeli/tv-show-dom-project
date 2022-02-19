@@ -15,5 +15,6 @@ module.exports = {
   rules: {
     'max-len': 'off',
     radix: 'off',
+    'no-console': 'off',
   },
 };

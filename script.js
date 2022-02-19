@@ -1,6 +1,6 @@
+/* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
-/* eslint-disable no-unused-vars */
 let allEpisodes;
 let allShows;
 const rootElem = document.getElementById('root');
@@ -8,8 +8,24 @@ const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
 let currShowID = 82;
 
-const getAllEpisodesFromAPI = async (showID = currShowID) => fetch(`https://api.tvmaze.com/shows/${showID}/episodes`).then((res) => res.json()).then((data) => data);
+const handleError = (err) => {
+  console.error(err);
+  return new Response(JSON.stringify({
+    code: 400,
+    message: 'Stupid network Error',
+  }));
+};
 
+const getAllEpisodesFromAPI = async (showID = currShowID) => {
+  let res = await (fetch(`https://api.tvmaze.com/shows/${showID}/episodes`).catch(handleError));
+  if (res.ok) {
+    res = await res.json();
+    return res;
+  }
+  return Promise.reject(response);
+};
+
+// Function to format season and episode numbers (S01E01)
 const seasonAndEpisode = (season, episode) => {
   season = season.toString().padStart(2, '0');
   episode = episode.toString().padStart(2, '0');
@@ -30,7 +46,8 @@ const createEpisodeEl = ({
 
   // Create image element
   const imgEl = document.createElement('img');
-  imgEl.setAttribute('src', image.medium);
+  const src = image ? image.medium : '/img/not_found.jpg';
+  imgEl.setAttribute('src', src);
 
   // Create description
   const descriptionEl = document.createElement('span');
@@ -107,14 +124,6 @@ const createEpisodesSelect = () => {
   document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
-const changeShow = async (showID) => {
-  currShowID = showID;
-  allEpisodes = await getAllEpisodesFromAPI(showID);
-  renderEpisodes();
-  document.querySelector('.episode-selector').remove();
-  createEpisodesSelect();
-};
-
 const createShowsSelect = () => {
   const selectEl = document.createElement('select');
   selectEl.classList.add('show-selector');
@@ -131,24 +140,30 @@ const createShowsSelect = () => {
   });
   // Add event listener to search by ID
 
-  selectEl.addEventListener('change', (e) => changeShow(e.target.value));
+  selectEl.addEventListener('change', (e) => setup(null, e.target.value));
 
   // insert the select element before searchbox
   document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
-const setup = async () => {
-  allEpisodes = await getAllEpisodesFromAPI();
-  allShows = getAllShows().sort((a, b) => {
-    if (a.name >= b.name) {
-      return 1;
-    }
-    return -1;
+const sortObj = (obj) => obj.sort((a, b) => (a.name >= b.name ? 1 : -1));
+
+const setup = (e, showID = 82) => {
+  searchBox.value = '';
+  allShows = sortObj(getAllShows());
+  if (document.querySelector('.episode-selector')) {
+    document.querySelector('.episode-selector').remove();
+  }
+  if (!document.querySelector('.show-selector')) {
+    createShowsSelect();
+  }
+  currShowID = showID;
+  getAllEpisodesFromAPI().then((data) => {
+    allEpisodes = data;
+    renderEpisodes(allEpisodes);
+    searchBox.addEventListener('input', searchEpisodes);
+    createEpisodesSelect();
   });
-  renderEpisodes();
-  searchBox.addEventListener('input', searchEpisodes);
-  createShowsSelect();
-  createEpisodesSelect();
 };
 
 window.onload = setup;
