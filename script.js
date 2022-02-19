@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-unused-vars */
 let allEpisodes;
+const APIURL = 'https://api.tvmaze.com/shows/82/episodes';
 const rootElem = document.getElementById('root');
 const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
@@ -103,8 +104,10 @@ const createSelect = () => {
   document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
-const setup = () => {
-  allEpisodes = getAllEpisodes();
+const getAllEpisodesFromAPI = async () => fetch(APIURL).then((res) => res.json()).then((data) => data);
+
+const setup = async () => {
+  allEpisodes = await getAllEpisodesFromAPI();
   renderEpisodes();
   searchBox.addEventListener('input', searchEpisodes);
   createSelect();
