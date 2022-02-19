@@ -2,10 +2,13 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-unused-vars */
 let allEpisodes;
-const APIURL = 'https://api.tvmaze.com/shows/82/episodes';
+let allShows;
 const rootElem = document.getElementById('root');
 const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
+let currShowID = 82;
+
+const getAllEpisodesFromAPI = async (showID = currShowID) => fetch(`https://api.tvmaze.com/shows/${showID}/episodes`).then((res) => res.json()).then((data) => data);
 
 const seasonAndEpisode = (season, episode) => {
   season = season.toString().padStart(2, '0');
@@ -77,7 +80,7 @@ const searchEpisodes = (e, searchById) => {
   renderEpisodes(filteredEpisodes);
 };
 
-const createSelect = () => {
+const createEpisodesSelect = () => {
   const selectEl = document.createElement('select');
   selectEl.classList.add('episode-selector');
 
@@ -104,13 +107,48 @@ const createSelect = () => {
   document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
-const getAllEpisodesFromAPI = async () => fetch(APIURL).then((res) => res.json()).then((data) => data);
+const changeShow = async (showID) => {
+  currShowID = showID;
+  allEpisodes = await getAllEpisodesFromAPI(showID);
+  renderEpisodes();
+  document.querySelector('.episode-selector').remove();
+  createEpisodesSelect();
+};
+
+const createShowsSelect = () => {
+  const selectEl = document.createElement('select');
+  selectEl.classList.add('show-selector');
+
+  // Append all options for shows
+  allShows.forEach(({ id, name }) => {
+    const optionEl = document.createElement('option');
+    if (id === currShowID) {
+      optionEl.setAttribute('selected', true);
+    }
+    optionEl.innerText = name;
+    optionEl.value = id;
+    selectEl.appendChild(optionEl);
+  });
+  // Add event listener to search by ID
+
+  selectEl.addEventListener('change', (e) => changeShow(e.target.value));
+
+  // insert the select element before searchbox
+  document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
+};
 
 const setup = async () => {
   allEpisodes = await getAllEpisodesFromAPI();
+  allShows = getAllShows().sort((a, b) => {
+    if (a.name >= b.name) {
+      return 1;
+    }
+    return -1;
+  });
   renderEpisodes();
   searchBox.addEventListener('input', searchEpisodes);
-  createSelect();
+  createShowsSelect();
+  createEpisodesSelect();
 };
 
 window.onload = setup;
