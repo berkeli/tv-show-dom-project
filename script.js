@@ -6,6 +6,12 @@ const rootElem = document.getElementById('root');
 const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
 
+const seasonAndEpisode = (season, episode) => {
+  season = season.toString().padStart(2, '0');
+  episode = episode.toString().padStart(2, '0');
+  return `S${season}E${episode}`;
+};
+
 const createEpisodeEl = ({
   name, season, number, image, summary, id,
 }) => {
@@ -16,9 +22,7 @@ const createEpisodeEl = ({
 
   // Create Episode Title
   const titleEl = document.createElement('h3');
-  season = season.toString().padStart(2, '0');
-  number = number.toString().padStart(2, '0');
-  titleEl.innerText = `${name} - S${season}E${number}`;
+  titleEl.innerText = `${name} - ${seasonAndEpisode(season, number)}`;
 
   // Create image element
   const imgEl = document.createElement('img');
@@ -56,21 +60,54 @@ const renderEpisodes = (episodes = allEpisodes) => {
   }
 };
 
-const searchEpisodes = (e) => {
-  // Get the search query and lowercase it
-  const query = e.target.value.toLowerCase();
+const searchEpisodes = (e, searchById) => {
+  let filteredEpisodes = allEpisodes;
 
-  // Search all episodes
-  const filteredEpisodes = allEpisodes.filter(({ name, summary }) => name.toLowerCase().includes(query) || summary.toLowerCase().includes(query));
+  // Search all episodes (if searchById is provided then we should seach by ID)
+  if (searchById && e.target.value !== 'All') {
+    filteredEpisodes = allEpisodes.filter(({ id }) => id === parseInt(e.target.value));
+  } else {
+    // Get the search query and lowercase it
+    const query = e.target.value.toLowerCase();
+    filteredEpisodes = allEpisodes.filter(({ name, summary }) => name.toLowerCase().includes(query) || summary.toLowerCase().includes(query));
+  }
 
   // Render filtered
   renderEpisodes(filteredEpisodes);
+};
+
+const createSelect = () => {
+  const selectEl = document.createElement('select');
+  selectEl.classList.add('episode-selector');
+
+  // Create Default option
+  const defaultOption = document.createElement('option');
+  defaultOption.innerText = 'Select Episode';
+  defaultOption.value = 'All';
+  selectEl.appendChild(defaultOption);
+
+  // Append all options for episodes
+  allEpisodes.forEach(({
+    id, name, number, season,
+  }) => {
+    const optionEl = document.createElement('option');
+    optionEl.innerText = `${seasonAndEpisode(season, number)} - ${name}`;
+    optionEl.value = id;
+    selectEl.appendChild(optionEl);
+  });
+  // Add event listener to search by ID
+
+  selectEl.addEventListener('change', (e) => searchEpisodes(e, true));
+
+  // insert the select element before searchbox
+  document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
 const setup = () => {
   allEpisodes = getAllEpisodes();
   renderEpisodes();
   searchBox.addEventListener('input', searchEpisodes);
+  createSelect();
 };
 
 window.onload = setup;

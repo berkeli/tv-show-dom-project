@@ -18,11 +18,22 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 2rem;
+}
+
+.search-form {
+    height: 3rem;
+}
+
+.episode-selector {
+    padding: 0.3rem;
+    margin: 0.5rem 0;
 }
 
 .search {
     padding: 0.5rem;
     font-size: large;
+    position: relative;
 }
 
 .episodes-container {
@@ -58,12 +69,6 @@ footer {
     .episodes-container {
         grid-template-columns: repeat(2, auto);
     }
-    
-    header {
-        flex-direction: row;
-        justify-content: space-between;
-        padding: 2rem;
-    }
 }
 
 /* MEDIUM BREAKPOINT */
@@ -77,6 +82,10 @@ footer {
 @media (min-width: 992px) {
     .episodes-container {
         grid-template-columns: repeat(4, auto);
+    }
+    header {
+        flex-direction: row;
+        justify-content: space-between;
     }
 }
 

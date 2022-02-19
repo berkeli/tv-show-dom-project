@@ -1,5 +1,5 @@
 module.exports = {
-  ignorePatterns: ['episodes.js'],
+  ignorePatterns: ['shows.js'],
   env: {
     browser: true,
     es2021: true,
