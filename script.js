@@ -276,7 +276,7 @@ const renderShows = (shows = allShows, append = false) => {
   shows.forEach((show) => listEl.appendChild(createShowEl(show)));
 
   // Create intersection observer
-  observer.observe(toObserve);
+  if (!searchBox.value) observer.observe(toObserve);
 
   // Render the container with children
   rootElem.innerHTML = '';
