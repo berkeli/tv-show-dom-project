@@ -8,11 +8,23 @@ const PAGES = {
 let allEpisodes;
 let currentPage = PAGES.SHOWS;
 let allShows;
+const perPage = 4;
+let currPageNum = 1;
+let showsChunk;
+let toObserve;
 const rootElem = document.getElementById('root');
 const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
 const goBack = document.getElementById('goback');
 let currShowID;
+
+const observer = new IntersectionObserver((entries) => {
+  if (entries[0].isIntersecting) {
+    showsChunk = allShows.slice(currPageNum * perPage, (currPageNum + 1) * perPage);
+    currPageNum++;
+    renderShows(showsChunk, true);
+  }
+});
 
 const handleError = (err) => {
   console.error(err);
@@ -244,11 +256,18 @@ const createShowEl = ({
 
   // Add click action to display episisodes
   showEl.addEventListener('click', (e) => selectShow(e, id));
-
+  toObserve = showEl;
   return showEl;
 };
 
-const renderShows = (shows = allShows) => {
+const renderShows = (shows = allShows, append = false) => {
+  if (append) {
+    const listEl = document.querySelector('.shows-container');
+    shows.slice(shows.length - perPage, shows.length).forEach((show) => listEl.appendChild(createShowEl(show)));
+    observer.observe(toObserve);
+    return;
+  }
+
   // Create container
   const listEl = document.createElement('ul');
   listEl.classList.add('shows-container');
@@ -256,12 +275,15 @@ const renderShows = (shows = allShows) => {
   // Add shows
   shows.forEach((show) => listEl.appendChild(createShowEl(show)));
 
+  // Create intersection observer
+  observer.observe(toObserve);
+
   // Render the container with children
   rootElem.innerHTML = '';
   rootElem.appendChild(listEl);
 
   // Display search count if search used
-  if (shows.length !== allShows.length) {
+  if (shows.length !== allShows.length && searchBox.value) {
     searchCount.innerText = `Displaying ${shows.length}/${allShows.length} shows`;
   } else {
     searchCount.innerText = '';
@@ -274,6 +296,7 @@ const renderShows = (shows = allShows) => {
 };
 
 const showsPage = () => {
+  currPageNum = 1;
   goBack.classList.add('hidden');
   if (document.querySelector('.episode-selector')) {
     document.querySelector('.episode-selector').remove();
@@ -286,6 +309,7 @@ const showsPage = () => {
     document.querySelector('.show-selector').remove();
   }
   createShowsSelect();
-  renderShows(allShows);
+  showsChunk = allShows.slice(0, perPage * currPageNum);
+  renderShows(showsChunk);
 };
 window.onload = showsPage;
