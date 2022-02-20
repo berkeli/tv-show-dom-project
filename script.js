@@ -8,9 +8,10 @@ const PAGES = {
 let allEpisodes;
 let currentPage = PAGES.SHOWS;
 let allShows;
-const perPage = 4;
+let perPage = 4;
 let currPageNum = 1;
 let showsChunk;
+let episodesChunk;
 const sortBy = {
   key: 'name',
   direction: 1,
@@ -23,10 +24,17 @@ const goBack = document.getElementById('goback');
 let currShowID;
 
 const observer = new IntersectionObserver((entries) => {
+  console.log(entries)
   if (entries[0].isIntersecting) {
-    showsChunk = allShows.slice(currPageNum * perPage, (currPageNum + 1) * perPage);
-    currPageNum++;
-    renderShows(showsChunk, true);
+    if (currentPage === PAGES.SHOWS) {
+      showsChunk = allShows.slice(currPageNum * perPage, (currPageNum + 1) * perPage);
+      currPageNum++;
+      renderShows(showsChunk, true);
+    } else {
+      episodesChunk = allEpisodes.slice(currPageNum * perPage, (currPageNum + 1) * perPage);
+      currPageNum++;
+      renderEpisodes(episodesChunk, true);
+    }
   }
 });
 
@@ -79,17 +87,26 @@ const createEpisodeEl = ({
   episodeEl.appendChild(titleEl);
   episodeEl.appendChild(imgEl);
   episodeEl.appendChild(descriptionEl);
-
+  toObserve = episodeEl;
   return episodeEl;
 };
 
-const renderEpisodes = (episodes = allEpisodes) => {
+const renderEpisodes = (episodes = allEpisodes, append) => {
+  if (append) {
+    const listEl = document.querySelector('.episodes-container');
+    episodes.forEach((episode) => listEl.appendChild(createEpisodeEl(episode)));
+    observer.observe(toObserve);
+    return;
+  }
+
   // Create container
   const listEl = document.createElement('ul');
   listEl.classList.add('episodes-container');
 
   // Add episodes
   episodes.forEach((episode) => listEl.appendChild(createEpisodeEl(episode)));
+
+  observer.observe(toObserve);
 
   // Render the container with children
   rootElem.innerHTML = '';
@@ -191,7 +208,8 @@ const selectShow = (e, showID = 82) => {
     return;
   }
   showID = parseInt(showID);
-
+  currPageNum = 1;
+  perPage = 20;
   // Adapt searchbox for episodes
   searchBox.value = '';
   searchBox.setAttribute('placeholder', 'Search Episodes...');
@@ -211,7 +229,8 @@ const selectShow = (e, showID = 82) => {
   createShowsSelect();
   getAllEpisodesFromAPI().then((data) => {
     allEpisodes = data;
-    renderEpisodes(allEpisodes);
+    episodesChunk = allEpisodes.slice(0, perPage * currPageNum);
+    renderEpisodes(episodesChunk);
     createEpisodesSelect();
   });
 };
@@ -355,6 +374,7 @@ const createSelectForSort = () => {
 
 const showsPage = () => {
   currPageNum = 1;
+  perPage = 4;
   goBack.classList.add('hidden');
   if (document.querySelector('.episode-selector')) {
     document.querySelector('.episode-selector').remove();
