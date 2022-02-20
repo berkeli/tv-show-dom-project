@@ -78,6 +78,25 @@ const favButton = (ID) => {
   return button;
 };
 
+const editNotesHandler = (e, inputNotes, ID) => {
+  const action = e.target.value;
+  if (action === 'Save Notes') {
+    userShows[ID].notes = inputNotes.value;
+    localStorage.setItem('userShows', JSON.stringify(userShows));
+    inputNotes.classList.toggle('hidden');
+    e.target.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+    e.target.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+  } else if (action !== 'Close') {
+    inputNotes.classList.toggle('hidden');
+    e.target.value = 'Close';
+    e.target.innerText = 'Close';
+  } else {
+    inputNotes.classList.toggle('hidden');
+    e.target.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+    e.target.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+  }
+};
+
 const editAddNotes = (ID) => {
   if (!userShows[ID]) {
     userShows[ID] = {};
@@ -96,24 +115,7 @@ const editAddNotes = (ID) => {
   });
   button.classList.add('button');
   button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
-  button.addEventListener('click', (e) => {
-    const action = e.target.value;
-    if (action === 'Save Notes') {
-      userShows[ID].notes = inputNotes.value;
-      localStorage.setItem('userShows', JSON.stringify(userShows));
-      inputNotes.classList.toggle('hidden');
-      button.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
-      button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
-    } else if (action !== 'Close') {
-      inputNotes.classList.toggle('hidden');
-      button.value = 'Close';
-      button.innerText = 'Close';
-    } else {
-      inputNotes.classList.toggle('hidden');
-      button.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
-      button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
-    }
-  });
+  button.addEventListener('click', (e) => editNotesHandler(e, inputNotes, ID));
   buttonBox.appendChild(inputNotes);
   buttonBox.appendChild(button);
   return buttonBox;
@@ -182,6 +184,9 @@ const createEpisodeEl = ({
   episodeEl.appendChild(titleEl);
   episodeEl.appendChild(imgEl);
   episodeEl.appendChild(descriptionEl);
+
+  // Create add notes section
+  episodeEl.appendChild(editAddNotes(id));
   toObserve = episodeEl;
   return episodeEl;
 };

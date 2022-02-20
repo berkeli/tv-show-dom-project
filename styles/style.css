@@ -94,12 +94,21 @@ header {
 .button:hover {
     background-color: pink;
 }
-
-.show .notes-box {
-    margin-left: 1rem;
+.notes-box {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+}
+.episode .notes-box {
+    padding: 0 1.5rem;
+    width: 100%;
+}
+.notes-box textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+.show .notes-box {
+    margin-left: 1rem;
 }
 
 .show h2, .show-details img {
