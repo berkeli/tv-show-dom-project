@@ -1,10 +1,20 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-undef */
 /* eslint-disable no-param-reassign */
+/*
+type userShows = {
+  id: { favourite: boolean, notes: string}
+}
+*/
+let userShows = JSON.parse(localStorage.getItem('userShows'));
+if (!userShows) {
+  userShows = {};
+}
 const PAGES = {
   SHOWS: 'shows',
   EPISODES: 'episodes',
 };
+
 let allEpisodes;
 let currentPage = PAGES.SHOWS;
 let allShows;
@@ -48,6 +58,65 @@ const truncDesc = (text, length) => {
   });
   descEl.appendChild(readMoreEl);
   return descEl;
+};
+
+const favButton = (ID) => {
+  if (!userShows[ID]) {
+    userShows[ID] = {};
+  }
+  const button = document.createElement('button');
+  button.classList.add('button');
+  button.classList.toggle('favourited', !!userShows[ID].favourite);
+  button.innerText = userShows[ID].favourite ? '❤ In Your Favourites ❤' : '🖤 Favourite';
+  button.addEventListener('click', (e) => {
+    userShows[ID].favourite = !userShows[ID].favourite;
+    e.target.innerText = userShows[ID].favourite ? '❤ In Your Favourites ❤' : '🖤 Favourite';
+    localStorage.setItem('userShows', JSON.stringify(userShows));
+    button.classList.toggle('favourited', !!userShows[ID].favourite);
+  });
+  console.log(userShows);
+  return button;
+};
+
+const editAddNotes = (ID) => {
+  if (!userShows[ID]) {
+    userShows[ID] = {};
+  }
+  const buttonBox = document.createElement('div');
+  buttonBox.classList.add('notes-box');
+
+  const inputNotes = document.createElement('textarea');
+  inputNotes.classList.add('hidden');
+  inputNotes.value = userShows[ID].notes || '';
+
+  const button = document.createElement('button');
+  inputNotes.addEventListener('input', () => {
+    button.value = 'Save Notes';
+    button.innerText = 'Save Notes';
+  });
+  button.classList.add('button');
+  button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+  button.addEventListener('click', (e) => {
+    const action = e.target.value;
+    if (action === 'Save Notes') {
+      userShows[ID].notes = inputNotes.value;
+      localStorage.setItem('userShows', JSON.stringify(userShows));
+      inputNotes.classList.toggle('hidden');
+      button.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+      button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+    } else if (action !== 'Close') {
+      inputNotes.classList.toggle('hidden');
+      button.value = 'Close';
+      button.innerText = 'Close';
+    } else {
+      inputNotes.classList.toggle('hidden');
+      button.value = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+      button.innerText = userShows[ID].notes ? 'Edit Notes' : 'Add Notes';
+    }
+  });
+  buttonBox.appendChild(inputNotes);
+  buttonBox.appendChild(button);
+  return buttonBox;
 };
 
 const observer = new IntersectionObserver((entries) => {
@@ -273,7 +342,7 @@ const createRatingEl = (key, value) => {
 const createShowEl = ({
   name, id, image, rating, genres, status, runtime, summary,
 }) => {
-  // Create a box
+  // Create a list item
   const showEl = document.createElement('li');
   showEl.classList.add('show');
   showEl.setAttribute('show-id', id);
@@ -307,9 +376,16 @@ const createShowEl = ({
   detailsEl.appendChild(createRatingEl('Runtime', runtime));
   boxEl.appendChild(detailsEl);
 
+  // Create a box element for Actions (Favourite & notes)
+  const showActions = document.createElement('div');
+  showActions.classList.add('show-actions');
+  showActions.appendChild(favButton(id));
+  showActions.appendChild(editAddNotes(id));
+
   // Add Everything together
   showEl.appendChild(titleEl);
   showEl.appendChild(boxEl);
+  showEl.appendChild(showActions);
 
   // Add click action to display episisodes
   toObserve = showEl;
