@@ -74,7 +74,6 @@ const favButton = (ID) => {
     localStorage.setItem('userShows', JSON.stringify(userShows));
     button.classList.toggle('favourited', !!userShows[ID].favourite);
   });
-  console.log(userShows);
   return button;
 };
 

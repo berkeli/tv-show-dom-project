@@ -94,6 +94,10 @@ header {
 .button:hover {
     background-color: pink;
 }
+.favourited:hover {
+    color: white;
+    background-color: red;
+}
 .notes-box {
     display: flex;
     flex-direction: column;
