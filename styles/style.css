@@ -20,6 +20,17 @@ header {
     align-items: center;
     padding: 2rem;
 }
+.text-center {
+    text-align: center;
+}
+.goback-button {
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none;
+}
 
 .search-form {
     height: 3rem;
@@ -34,6 +45,32 @@ header {
     padding: 0.5rem;
     font-size: large;
     position: relative;
+}
+
+.show {
+    margin: 2rem;
+    padding: 1rem;
+    list-style: none;
+    cursor: pointer;
+    transition:all 0.3s ease;
+}
+
+.show:hover {
+    background-color: #e4ddf4;
+}
+
+.show-details {
+    display: grid;
+    grid-template-columns: auto auto 20%;
+    gap: 2rem;
+}
+
+.show-details span {
+    padding: 1rem;
+}
+
+.show-details ul {
+    list-style: none;
 }
 
 .episodes-container {
