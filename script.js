@@ -11,6 +11,10 @@ let allShows;
 const perPage = 4;
 let currPageNum = 1;
 let showsChunk;
+const sortBy = {
+  key: 'name',
+  direction: 1,
+};
 let toObserve;
 const rootElem = document.getElementById('root');
 const searchBox = document.getElementById('search');
@@ -175,7 +179,10 @@ const createShowsSelect = () => {
   document.querySelector('header').insertBefore(selectEl, document.querySelector('.search-form'));
 };
 
-const sortObj = (obj) => obj.sort((a, b) => (a.name >= b.name ? 1 : -1));
+const sortObj = (a, b) => {
+  if (sortBy.key === 'name') return (a.name >= b.name ? sortBy.direction : -sortBy.direction);
+  return (a.rating.average >= b.rating.average ? sortBy.direction : -sortBy.direction);
+};
 
 const selectShow = (e, showID = 82) => {
   if (showID === 'All') {
@@ -192,6 +199,9 @@ const selectShow = (e, showID = 82) => {
   currentPage = PAGES.EPISODES;
   goBack.classList.remove('hidden');
 
+  if (document.querySelector('.sort-selector')) {
+    document.querySelector('.sort-selector').remove();
+  }
   if (document.querySelector('.episode-selector')) {
     document.querySelector('.episode-selector').remove();
   }
@@ -295,6 +305,54 @@ const renderShows = (shows = allShows, append = false) => {
   });
 };
 
+const createSelectForSort = () => {
+  const container = document.createElement('div');
+  container.classList.add('sort-selector');
+
+  const sortLabel = document.createElement('label');
+  sortLabel.setAttribute('for', 'sort-selector');
+  sortLabel.innerText = 'Sort By:';
+  container.appendChild(sortLabel);
+
+  const selectEl = document.createElement('select');
+  selectEl.setAttribute('id', 'sort-selector');
+
+  // Create sort by name option
+  let optionEl = document.createElement('option');
+  optionEl.innerText = 'Name';
+  optionEl.value = 'name';
+  if (sortBy.key === 'name') {
+    optionEl.setAttribute('selected', true);
+  }
+  selectEl.appendChild(optionEl);
+
+  // Create sort by rating option
+  optionEl = document.createElement('option');
+  optionEl.innerText = 'Rating';
+  optionEl.value = 'rating';
+  if (sortBy.key === 'rating') {
+    optionEl.setAttribute('selected', true);
+  }
+  selectEl.appendChild(optionEl);
+
+  const sortArrow = document.createElement('span');
+  sortArrow.innerText = sortBy.direction > 0 ? '↑' : '↓';
+  sortArrow.addEventListener('click', () => {
+    sortBy.direction *= -1;
+    showsPage();
+  });
+
+  // Add event listener to search by ID
+  selectEl.addEventListener('change', (e) => {
+    sortBy.key = e.target.value;
+    showsPage();
+  });
+  container.appendChild(selectEl);
+  container.appendChild(sortArrow);
+  // insert the select element before searchbox
+  document.querySelector('header').insertBefore(container, document.querySelector('.search-form'));
+};
+
 const showsPage = () => {
   currPageNum = 1;
   goBack.classList.add('hidden');
@@ -304,11 +362,15 @@ const showsPage = () => {
   searchBox.addEventListener('input', search);
   searchBox.setAttribute('placeholder', 'Search Shows...');
   currentPage = PAGES.SHOWS;
-  allShows = sortObj(getAllShows());
+  allShows = getAllShows().sort(sortObj);
   if (document.querySelector('.show-selector')) {
     document.querySelector('.show-selector').remove();
   }
+  if (document.querySelector('.sort-selector')) {
+    document.querySelector('.sort-selector').remove();
+  }
   createShowsSelect();
+  createSelectForSort();
   showsChunk = allShows.slice(0, perPage * currPageNum);
   renderShows(showsChunk);
 };
