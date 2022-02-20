@@ -22,9 +22,35 @@ const searchBox = document.getElementById('search');
 const searchCount = document.getElementById('search-count');
 const goBack = document.getElementById('goback');
 let currShowID;
+const showDescLen = 200;
+const episodeDescLen = 100;
+
+const stripHTML = (html) => {
+  const tmp = document.createElement('DIV');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText;
+};
+
+const truncDesc = (text, length) => {
+  const descEl = document.createElement('p');
+  if (stripHTML(text).length <= length) {
+    descEl.innerHTML = text;
+    return descEl;
+  }
+  descEl.innerText = `${stripHTML(text).substring(0, length)}...`;
+
+  const readMoreEl = document.createElement('a');
+  readMoreEl.innerText = 'Read More';
+  readMoreEl.setAttribute('href', '#');
+  readMoreEl.addEventListener('click', (event) => {
+    event.preventDefault();
+    descEl.innerHTML = text;
+  });
+  descEl.appendChild(readMoreEl);
+  return descEl;
+};
 
 const observer = new IntersectionObserver((entries) => {
-  console.log(entries)
   if (entries[0].isIntersecting) {
     if (currentPage === PAGES.SHOWS) {
       showsChunk = allShows.slice(currPageNum * perPage, (currPageNum + 1) * perPage);
@@ -81,7 +107,7 @@ const createEpisodeEl = ({
 
   // Create description
   const descriptionEl = document.createElement('span');
-  descriptionEl.innerHTML = summary;
+  descriptionEl.appendChild(truncDesc(summary, episodeDescLen));
 
   // Add Everything together
   episodeEl.appendChild(titleEl);
@@ -113,7 +139,7 @@ const renderEpisodes = (episodes = allEpisodes, append) => {
   rootElem.appendChild(listEl);
 
   // Display search count if search used
-  if (episodes.length !== allEpisodes.length) {
+  if (episodes.length !== allEpisodes.length && searchBox.value) {
     searchCount.innerText = `Displaying ${episodes.length}/${allEpisodes.length} episodes`;
   } else {
     searchCount.innerText = '';
@@ -255,6 +281,7 @@ const createShowEl = ({
   // Create Episode Title
   const titleEl = document.createElement('h2');
   titleEl.innerText = name;
+  titleEl.addEventListener('click', (e) => selectShow(e, id));
 
   // Create box with 3 columns (img | description | details)
   const boxEl = document.createElement('div');
@@ -263,12 +290,13 @@ const createShowEl = ({
   // Create image element
   const imgEl = document.createElement('img');
   const src = image ? image.medium : '/img/not_found.jpg';
+  imgEl.addEventListener('click', (e) => selectShow(e, id));
   imgEl.setAttribute('src', src);
   boxEl.appendChild(imgEl);
 
   // Create description
   const descriptionEl = document.createElement('span');
-  descriptionEl.innerHTML = summary;
+  descriptionEl.appendChild(truncDesc(summary, showDescLen));
   boxEl.appendChild(descriptionEl);
 
   // Create details
@@ -284,7 +312,6 @@ const createShowEl = ({
   showEl.appendChild(boxEl);
 
   // Add click action to display episisodes
-  showEl.addEventListener('click', (e) => selectShow(e, id));
   toObserve = showEl;
   return showEl;
 };
