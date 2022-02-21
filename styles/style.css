@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@500&display=swap');
+* {
+    margin: 0; 
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'IBM Plex Sans Thai Looped', sans-serif;
+}
+:root {
+    --light-blue: #e4ddf4;
+}
+
+body {
+    max-width: 100vw;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+}
+.text-center {
+    text-align: center;
+}
+.goback-button {
+    text-decoration: none;
+    font-size: 1.2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.search-form {
+    height: 3rem;
+}
+
+.episode-selector, .show-selector, .sort-selector select {
+    padding: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.sort-selector label, .sort-selector span {
+    margin: 0 1rem;
+}
+
+.sort-selector span {
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 1.3rem;
+}
+
+.search {
+    padding: 0.5rem;
+    font-size: large;
+    position: relative;
+}
+
+.show {
+    margin: 2rem;
+    padding: 1rem;
+    list-style: none;
+    transition:all 0.3s ease;
+}
+
+.show:hover, .episode:hover {
+    background-color: #e4ddf4;
+}
+
+.show-details {
+    display: grid;
+    grid-template-columns: auto auto 20%;
+    gap: 2rem;
+}
+.show-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.button {
+    cursor: pointer;
+    border: none;
+    padding: 0.75rem;
+    transition: all 0.3s ease-in-out;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+}
+.favourited {
+    background-color: pink;
+    color: red;
+}
+.button:hover {
+    background-color: pink;
+}
+.favourited:hover {
+    color: white;
+    background-color: red;
+}
+.notes-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+.episode .notes-box {
+    padding: 0 1.5rem;
+    width: 100%;
+}
+.notes-box textarea {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+.show .notes-box {
+    margin-left: 1rem;
+}
+
+.show h2, .show-details img {
+    cursor: pointer;
+}
+
+.show-details span {
+    padding: 1rem;
+}
+
+.show-details ul {
+    list-style: none;
+}
+
+.episodes-container {
+    display: grid;
+    grid-template-columns: auto;
+    columns: 1;
+    list-style-type: none;
+}
+
+.episode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.5rem;
+    transition:all 0.3s ease;
+}
+
+.episode h3, .episode img {
+    margin-bottom: 0.5rem;
+}
+
+.episode > span > p {
+    line-height: 1.6rem;
+    padding: 2rem;
+}
+
+
+footer {
+    text-align: center;
+}
+
+/* SMALL BREAKPOINT */
+@media (min-width: 576px) {
+    .episodes-container {
+        grid-template-columns: repeat(2, auto);
+    }
+}
+
+/* MEDIUM BREAKPOINT */
+@media (min-width: 768px) {
+    .episodes-container {
+        grid-template-columns: repeat(3, auto);
+    }
+}
+
+/* LARGE BREAKPOINT */
+@media (min-width: 992px) {
+    .episodes-container {
+        grid-template-columns: repeat(4, auto);
+    }
+    header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+

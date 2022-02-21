@@ -3,18 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TV Show Project | My Name (My GitHub username)</title>
-    <link href="style.css" rel="stylesheet" />
+    <title>TV Show Project | Berkeli Halmyradov (berkeli)</title>
+    <link href="/styles/style.css" rel="stylesheet" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   </head>
 
   <body>
+    <!-- HEADER -->
+    <header>
+      <h1>TV SHOW DOM</h1>
+      <div class="search-form">
+        <input type="text" placeholder="Search Shows..." id="search" class="search"/>
+        <p id="search-count" class="search-count"></p>
+      </div>
+    </header>
+    <div class="text-center">
+      <a class="goback-button hidden" id="goback" href="#">Go back to Shows...</a>
+    </div>
     <div id="root">
     </div>
 
     <!-- Loads a provided function called getAllEpisodes() which returns all episodes -->
-    <script src="episodes.js"></script>
+    <script src="shows.js"></script>
 
+
+    <!-- FOOTER -->
+    <footer>
+      <a>The website is created for learning purposes. Data provided by <a href="https://www.tvmaze.com/">TVMaze.com</a></p>
+    </footer>
     <!-- Loads YOUR javascript code -->
     <script src="script.js"></script>
   </body>

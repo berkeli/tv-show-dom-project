@@ -1,0 +1,14 @@
+{
+  "name": "tv-show-dom-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/berkeli/tv-show-dom-project",
+  "author": "Berkeli H <berkelih@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.9.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^26.1.1"
+  }
+}
